@@ -1,42 +1,88 @@
 package com.wangxingxing.mycomposeapp.repository
 
 import com.wangxingxing.mycomposeapp.model.User
-import kotlinx.coroutines.delay
+import com.wangxingxing.mycomposeapp.model.UserInfo
+import com.wangxingxing.mycomposeapp.network.RemoteDataSource
+import com.wangxingxing.mycomposeapp.network.toNetworkException
+import com.wangxingxing.mycomposeapp.utils.LogUtils
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/**
+ * 用户数据仓库
+ * 负责协调远程数据源和本地数据源
+ */
 @Singleton
-class UserRepository @Inject constructor() {
+class UserRepository @Inject constructor(
+    private val remoteDataSource: RemoteDataSource
+) {
     
-    private val fakeUsers = listOf(
-        User(1, "John Doe", "john.doe@example.com"),
-        User(2, "Jane Smith", "jane.smith@example.com"),
-        User(3, "Bob Johnson", "bob.johnson@example.com"),
-        User(4, "Alice Williams", "alice.williams@example.com"),
-        User(5, "Charlie Brown", "charlie.brown@example.com"),
-        User(6, "Diana Prince", "diana.prince@example.com"),
-        User(7, "Edward Norton", "edward.norton@example.com"),
-        User(8, "Fiona Apple", "fiona.apple@example.com")
-    )
-    
-    suspend fun getUsers(): List<User> {
-        delay(2000) // Simulate network delay
-        return fakeUsers
+    /**
+     * 登录
+     * @return Flow<Result<Boolean>> 登录结果
+     */
+    fun login(email: String, password: String): Flow<Result<Boolean>> = flow {
+        val result = remoteDataSource.login(email, password)
+        result.fold(
+            onSuccess = { response ->
+                // 登录成功，可以在这里保存token等信息（如有）
+                LogUtils.d("登录成功: $response")
+                emit(Result.success(true))
+            },
+            onFailure = { e ->
+                emit(Result.failure(e.toNetworkException()))
+            }
+        )
     }
     
-    suspend fun getUserById(id: Int): User? {
-        delay(1000) // Simulate network delay
-        return fakeUsers.find { it.id == id }
+    /**
+     * 获取用户列表
+     * @return Flow<Result<List<User>>>
+     */
+    fun getUsers(): Flow<Result<List<User>>> = flow {
+        val result = remoteDataSource.getUsers()
+        result.fold(
+            onSuccess = { users ->
+                emit(Result.success(users))
+            },
+            onFailure = { e ->
+                emit(Result.failure(e.toNetworkException()))
+            }
+        )
     }
     
-    fun login(email: String, password: String): Boolean {
-        // Simple fake login - accept any email/password combination
-        return email.isNotBlank() && password.isNotBlank()
+    /**
+     * 根据ID获取用户详情
+     * @return Flow<Result<User?>>
+     */
+    fun getUserById(id: Int): Flow<Result<User?>> = flow {
+        val result = remoteDataSource.getUserById(id)
+        result.fold(
+            onSuccess = { user ->
+                emit(Result.success(user))
+            },
+            onFailure = { e ->
+                emit(Result.failure(e.toNetworkException()))
+            }
+        )
     }
     
-    fun getCurrentUser(): User? {
-        // In a real app, this would come from a session/token
-        return fakeUsers.firstOrNull()
+    /**
+     * 获取当前登录用户
+     * @return Flow<Result<User?>>
+     */
+    fun getCurrentUser(): Flow<Result<User?>> = flow {
+        val result = remoteDataSource.getCurrentUser()
+        result.fold(
+            onSuccess = { user ->
+                emit(Result.success(user))
+            },
+            onFailure = { e ->
+                emit(Result.failure(e.toNetworkException()))
+            }
+        )
     }
 }
 

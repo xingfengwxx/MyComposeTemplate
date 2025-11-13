@@ -33,18 +33,23 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             
-            try {
-                val users = userRepository.getUsers()
-                _uiState.value = _uiState.value.copy(
-                    users = users,
-                    isLoading = false
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = "Failed to load users: ${e.message}"
-                )
-            }
+            userRepository.getUsers()
+                .collect { result ->
+                    result.fold(
+                        onSuccess = { users ->
+                            _uiState.value = _uiState.value.copy(
+                                users = users,
+                                isLoading = false
+                            )
+                        },
+                        onFailure = { e ->
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                errorMessage = "加载用户列表失败: ${e.message}"
+                            )
+                        }
+                    )
+                }
         }
     }
 }

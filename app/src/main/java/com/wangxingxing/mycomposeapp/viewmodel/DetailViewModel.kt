@@ -29,19 +29,24 @@ class DetailViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             
-            try {
-                val user = userRepository.getUserById(userId)
-                _uiState.value = _uiState.value.copy(
-                    user = user,
-                    isLoading = false,
-                    errorMessage = if (user == null) "User not found" else null
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = "Failed to load user: ${e.message}"
-                )
-            }
+            userRepository.getUserById(userId)
+                .collect { result ->
+                    result.fold(
+                        onSuccess = { user ->
+                            _uiState.value = _uiState.value.copy(
+                                user = user,
+                                isLoading = false,
+                                errorMessage = if (user == null) "用户未找到" else null
+                            )
+                        },
+                        onFailure = { e ->
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                errorMessage = "加载用户详情失败: ${e.message}"
+                            )
+                        }
+                    )
+                }
         }
     }
 }

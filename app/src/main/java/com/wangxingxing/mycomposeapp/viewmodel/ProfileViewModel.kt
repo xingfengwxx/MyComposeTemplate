@@ -33,18 +33,23 @@ class ProfileViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
             
-            try {
-                val user = userRepository.getCurrentUser()
-                _uiState.value = _uiState.value.copy(
-                    user = user,
-                    isLoading = false
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(
-                    isLoading = false,
-                    errorMessage = "Failed to load user: ${e.message}"
-                )
-            }
+            userRepository.getCurrentUser()
+                .collect { result ->
+                    result.fold(
+                        onSuccess = { user ->
+                            _uiState.value = _uiState.value.copy(
+                                user = user,
+                                isLoading = false
+                            )
+                        },
+                        onFailure = { e ->
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                errorMessage = "加载用户信息失败: ${e.message}"
+                            )
+                        }
+                    )
+                }
         }
     }
 }

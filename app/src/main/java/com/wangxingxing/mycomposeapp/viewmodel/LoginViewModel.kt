@@ -43,10 +43,10 @@ class LoginViewModel @Inject constructor(
             return
         }
         
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(currentState.email).matches()) {
-            _uiState.value = currentState.copy(errorMessage = "Invalid email format")
-            return
-        }
+//        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(currentState.email).matches()) {
+//            _uiState.value = currentState.copy(errorMessage = "Invalid email format")
+//            return
+//        }
         
         if (currentState.password.isBlank()) {
             _uiState.value = currentState.copy(errorMessage = "Password cannot be empty")
@@ -61,13 +61,25 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = currentState.copy(isLoading = true, errorMessage = null)
             
-            val success = userRepository.login(currentState.email, currentState.password)
-            
-            _uiState.value = _uiState.value.copy(
-                isLoading = false,
-                isLoginSuccessful = success,
-                errorMessage = if (!success) "Login failed" else null
-            )
+            userRepository.login(currentState.email, currentState.password)
+                .collect { result ->
+                    result.fold(
+                        onSuccess = { success ->
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                isLoginSuccessful = success,
+                                errorMessage = if (!success) "登录失败" else null
+                            )
+                        },
+                        onFailure = { e ->
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                isLoginSuccessful = false,
+                                errorMessage = "登录失败: ${e.message}"
+                            )
+                        }
+                    )
+                }
         }
     }
     
