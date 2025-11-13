@@ -4,10 +4,8 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.wangxingxing.mycomposeapp.model.User
 import com.wangxingxing.mycomposeapp.model.UserInfo
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
@@ -36,8 +34,8 @@ class UserLocalDataSource @Inject constructor(
         context.userDataStore.edit { prefs ->
             prefs[Keys.USER_ID] = userInfo.id
             prefs[Keys.USERNAME] = userInfo.username
-            userInfo.email?.let { prefs[Keys.EMAIL] = it } ?: run { prefs.remove(Keys.EMAIL) }
-            userInfo.token?.let { prefs[Keys.TOKEN] = it } ?: run { prefs.remove(Keys.TOKEN) }
+            prefs[Keys.EMAIL] = userInfo.email
+            prefs[Keys.TOKEN] = userInfo.token
         }
     }
 
@@ -49,23 +47,13 @@ class UserLocalDataSource @Inject constructor(
         return context.userDataStore.data.map { prefs ->
             val id = prefs[Keys.USER_ID] ?: return@map null
             val username = prefs[Keys.USERNAME] ?: return@map null
-            val email = prefs[Keys.EMAIL]
-            val token = prefs[Keys.TOKEN]
-            UserInfo(id = id, username = username, email = email ?: "", token = token ?: "")
+            val email = prefs[Keys.EMAIL] ?: ""
+            val token = prefs[Keys.TOKEN] ?: ""
+            UserInfo(id = id, username = username, email = email, token = token)
         }
     }
 
-    fun getUserForUi(): Flow<UserInfo?> {
-        return getUserInfo().map { info ->
-            info?.let {
-                UserInfo(
-                    id = it.id,
-                    username = it.username,
-                    email = it.email ?: ""
-                )
-            }
-        }
-    }
+    fun getUserForUi(): Flow<UserInfo?> = getUserInfo()
 }
 
 
