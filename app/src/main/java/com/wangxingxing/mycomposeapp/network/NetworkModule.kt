@@ -21,7 +21,7 @@ object NetworkModule {
     /**
      * Base URL - 可以根据构建变体配置不同的URL
      */
-    private const val BASE_URL = "https://jsonplaceholder.typicode.com/" // 示例API，实际使用时替换为真实API地址
+    private const val BASE_URL = "https://www.wanandroid.com/" // 示例API，实际使用时替换为真实API地址
     
     /**
      * 提供Gson实例

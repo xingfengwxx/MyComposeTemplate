@@ -77,7 +77,7 @@ fun ProfileScreen(
                         
                         ProfileItem(
                             label = "Name",
-                            value = user.name
+                            value = user.username
                         )
                         
                         ProfileItem(

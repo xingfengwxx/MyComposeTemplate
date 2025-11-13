@@ -3,6 +3,7 @@ package com.wangxingxing.mycomposeapp.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wangxingxing.mycomposeapp.model.User
+import com.wangxingxing.mycomposeapp.model.UserInfo
 import com.wangxingxing.mycomposeapp.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ProfileUiState(
-    val user: User? = null,
+    val user: UserInfo? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null
 )

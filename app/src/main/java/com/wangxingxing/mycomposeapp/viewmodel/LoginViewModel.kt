@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class LoginUiState(
-    val email: String = "",
+    val username: String = "",
     val password: String = "",
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
@@ -27,7 +27,7 @@ class LoginViewModel @Inject constructor(
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
     
     fun updateEmail(email: String) {
-        _uiState.value = _uiState.value.copy(email = email, errorMessage = null)
+        _uiState.value = _uiState.value.copy(username = email, errorMessage = null)
     }
     
     fun updatePassword(password: String) {
@@ -38,15 +38,10 @@ class LoginViewModel @Inject constructor(
         val currentState = _uiState.value
         
         // Validation
-        if (currentState.email.isBlank()) {
-            _uiState.value = currentState.copy(errorMessage = "Email cannot be empty")
+        if (currentState.username.isBlank()) {
+            _uiState.value = currentState.copy(errorMessage = "Username cannot be empty")
             return
         }
-        
-//        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(currentState.email).matches()) {
-//            _uiState.value = currentState.copy(errorMessage = "Invalid email format")
-//            return
-//        }
         
         if (currentState.password.isBlank()) {
             _uiState.value = currentState.copy(errorMessage = "Password cannot be empty")
@@ -61,7 +56,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = currentState.copy(isLoading = true, errorMessage = null)
             
-            userRepository.login(currentState.email, currentState.password)
+            userRepository.login(currentState.username, currentState.password)
                 .collect { result ->
                     result.fold(
                         onSuccess = { success ->

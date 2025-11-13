@@ -2,6 +2,7 @@ package com.wangxingxing.mycomposeapp.repository
 
 import com.wangxingxing.mycomposeapp.model.User
 import com.wangxingxing.mycomposeapp.model.UserInfo
+import com.wangxingxing.mycomposeapp.data.UserLocalDataSource
 import com.wangxingxing.mycomposeapp.network.RemoteDataSource
 import com.wangxingxing.mycomposeapp.network.toNetworkException
 import com.wangxingxing.mycomposeapp.utils.LogUtils
@@ -16,7 +17,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class UserRepository @Inject constructor(
-    private val remoteDataSource: RemoteDataSource
+    private val remoteDataSource: RemoteDataSource,
+    private val userLocalDataSource: UserLocalDataSource
 ) {
     
     /**
@@ -27,8 +29,16 @@ class UserRepository @Inject constructor(
         val result = remoteDataSource.login(email, password)
         result.fold(
             onSuccess = { response ->
-                // 登录成功，可以在这里保存token等信息（如有）
-                LogUtils.d("登录成功: $response")
+                // 登录成功，保存用户信息到本地
+                userLocalDataSource.saveUserInfo(
+                    UserInfo(
+                        id = response.id,
+                        username = response.username,
+                        email = response.email,
+                        token = response.token
+                    )
+                )
+                LogUtils.d("登录成功并已保存用户信息: $response")
                 emit(Result.success(true))
             },
             onFailure = { e ->
@@ -73,16 +83,11 @@ class UserRepository @Inject constructor(
      * 获取当前登录用户
      * @return Flow<Result<User?>>
      */
-    fun getCurrentUser(): Flow<Result<User?>> = flow {
-        val result = remoteDataSource.getCurrentUser()
-        result.fold(
-            onSuccess = { user ->
+    fun getCurrentUser(): Flow<Result<UserInfo?>> = flow {
+        userLocalDataSource.getUserForUi()
+            .collect { user ->
                 emit(Result.success(user))
-            },
-            onFailure = { e ->
-                emit(Result.failure(e.toNetworkException()))
             }
-        )
     }
 }
 

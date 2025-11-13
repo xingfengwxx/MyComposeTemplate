@@ -38,7 +38,7 @@ fun LoginScreen(
         )
         
         OutlinedTextField(
-            value = uiState.email,
+            value = uiState.username,
             onValueChange = viewModel::updateEmail,
             label = { Text("Email") },
             modifier = Modifier
