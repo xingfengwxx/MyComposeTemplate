@@ -17,6 +17,8 @@ junit4 = "4.13.2"
 androidxTestExt = "1.1.5"
 espresso = "3.5.1"
 
+utilcodex = "1.31.1"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle" }
@@ -47,6 +49,8 @@ androidx-test-espresso-core = { group = "androidx.test.espresso", name = "espres
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+
+utilcodex = { group = "com.blankj", name = "utilcodex", version.ref = "utilcodex"}
 
 [plugins]
 androidApp = { id = "com.android.application", version.ref = "androidGradlePlugin" }
