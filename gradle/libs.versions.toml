@@ -16,8 +16,9 @@ datastore = "1.0.0"
 junit4 = "4.13.2"
 androidxTestExt = "1.1.5"
 espresso = "3.5.1"
-
 utilcodex = "1.31.1"
+xxpermissions = "18.5"
+aspectj = "1.9.6"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -51,6 +52,8 @@ androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-toolin
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 
 utilcodex = { group = "com.blankj", name = "utilcodex", version.ref = "utilcodex"}
+xxpermissions = { group = "com.github.getActivity", name = "XXPermissions", version.ref = "xxpermissions" }
+aspectj-rt = { group = "org.aspectj", name = "aspectjrt", version.ref = "aspectj" }
 
 [plugins]
 androidApp = { id = "com.android.application", version.ref = "androidGradlePlugin" }
