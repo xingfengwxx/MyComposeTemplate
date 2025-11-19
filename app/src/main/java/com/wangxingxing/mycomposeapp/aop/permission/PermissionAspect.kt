@@ -2,12 +2,14 @@ import android.app.Activity
 import android.util.Log
 import androidx.fragment.app.Fragment
 import com.blankj.utilcode.util.ActivityUtils
+import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.XXPermissions
 import com.hjq.permissions.permission.PermissionLists
 import com.hjq.permissions.permission.base.IPermission
 import com.wangxingxing.mycomposeapp.aop.permission.PermissionRequest
+import com.wangxingxing.mycomposeapp.util.PermissionHelper
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
@@ -34,16 +36,24 @@ class PermissionAspect {
             return
         }
 
-        // 将 KClass<out IPermission> 转换为 IPermission 实例
-        val permissionInstances = permissionRequest.permissions.map {
-            it.java.newInstance()
-        }.toTypedArray()
+        // 1. 直接使用 .permission(String...) 方法，这是最简洁的方式
+        val permissionsToRequest = permissionRequest.permissions
+        if (permissionsToRequest.isEmpty()) {
+            // 如果没有请求任何权限，直接执行原方法
+            try {
+                joinPoint.proceed()
+            } catch (throwable: Throwable) {
+                throwable.printStackTrace()
+            }
+            return
+        }
+
+        val requestPermissionLists = PermissionHelper.allPermissions.filter { it.permissionName in permissionsToRequest }
+        LogUtils.i("requestPermissionLists: $requestPermissionLists")
 
         XXPermissions.with(context)
-            // 申请多个权限
-            .permissions(permissionInstances)
-            // 设置不触发错误检测机制（局部设置）
-            //.unchecked()
+            // 2. 直接传入字符串数组，XXPermissions 内部会自动处理
+            .permissions(requestPermissionLists)
             .request(object : OnPermissionCallback {
 
                 override fun onResult(grantedList: MutableList<IPermission>, deniedList: MutableList<IPermission>) {
@@ -60,7 +70,12 @@ class PermissionAspect {
                         return
                     }
                     // 在这里处理权限请求成功的逻辑
-                    // ......
+                    try {
+                        // 所有权限都授予了，执行原方法
+                        joinPoint.proceed()
+                    } catch (throwable: Throwable) {
+                        throwable.printStackTrace()
+                    }
                 }
             })
     }

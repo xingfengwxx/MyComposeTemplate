@@ -16,6 +16,11 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    // 当 LoginScreen 首次加载时，尝试自动登录
+    LaunchedEffect(Unit) {
+        viewModel.attemptAutoLogin()
+    }
     
     LaunchedEffect(uiState.isLoginSuccessful) {
         if (uiState.isLoginSuccessful) {
@@ -86,4 +91,3 @@ fun LoginScreen(
         }
     }
 }
-

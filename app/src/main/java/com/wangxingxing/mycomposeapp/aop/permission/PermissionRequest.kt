@@ -1,8 +1,9 @@
 package com.wangxingxing.mycomposeapp.aop.permission
 
-import com.hjq.permissions.permission.base.IPermission
-import kotlin.reflect.KClass
-
+/**
+ * 权限请求注解
+ * @param permissions 需要请求的权限，请使用 [PermissionNames] 中的常量
+ */
 @Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION)
-annotation class PermissionRequest(val permissions: Array<KClass<out IPermission>>)
+annotation class PermissionRequest(vararg val permissions: String)
