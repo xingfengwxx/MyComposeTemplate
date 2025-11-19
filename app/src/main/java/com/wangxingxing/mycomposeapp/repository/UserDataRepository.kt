@@ -12,11 +12,9 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
-// 通过委托创建 DataStore 实例
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_prefs")
 
 @Singleton
-class UserDataRepository @Inject constructor(@ApplicationContext private val context: Context) {
+class UserDataRepository @Inject constructor(private val dataStore: DataStore<Preferences>) {
 
     private object PreferencesKeys {
         val USERNAME = stringPreferencesKey("username")
@@ -27,7 +25,7 @@ class UserDataRepository @Inject constructor(@ApplicationContext private val con
      * 提供一个 Flow，用于观察存储的凭据。
      * 如果用户名或密码不存在，则返回 null。
      */
-    val savedCredentials: Flow<Pair<String, String>?> = context.dataStore.data
+    val savedCredentials: Flow<Pair<String, String>?> = dataStore.data
         .map { preferences ->
             val username = preferences[PreferencesKeys.USERNAME]
             val password = preferences[PreferencesKeys.PASSWORD]
@@ -42,7 +40,7 @@ class UserDataRepository @Inject constructor(@ApplicationContext private val con
      * 保存用户名和密码。
      */
     suspend fun saveCredentials(username: String, password: String) {
-        context.dataStore.edit {
+        dataStore.edit {
             it[PreferencesKeys.USERNAME] = username
             it[PreferencesKeys.PASSWORD] = password
         }
@@ -52,7 +50,7 @@ class UserDataRepository @Inject constructor(@ApplicationContext private val con
      * 清除存储的凭据，用于登出。
      */
     suspend fun clearCredentials() {
-        context.dataStore.edit {
+        dataStore.edit {
             it.clear()
         }
     }

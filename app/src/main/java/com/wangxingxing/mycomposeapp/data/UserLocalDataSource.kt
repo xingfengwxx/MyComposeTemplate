@@ -13,15 +13,10 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val USER_DATASTORE_NAME = "user_prefs"
-
-private val Context.userDataStore: DataStore<Preferences> by preferencesDataStore(
-    name = USER_DATASTORE_NAME
-)
 
 @Singleton
 class UserLocalDataSource @Inject constructor(
-    @ApplicationContext private val context: Context
+    private val dataStore: DataStore<Preferences>
 ){
     private object Keys {
         val USER_ID = stringPreferencesKey("user_id")
@@ -31,7 +26,7 @@ class UserLocalDataSource @Inject constructor(
     }
 
     suspend fun saveUserInfo(userInfo: UserInfo) {
-        context.userDataStore.edit { prefs ->
+        dataStore.edit { prefs ->
             prefs[Keys.USER_ID] = userInfo.id
             prefs[Keys.USERNAME] = userInfo.username
             prefs[Keys.EMAIL] = userInfo.email
@@ -40,11 +35,11 @@ class UserLocalDataSource @Inject constructor(
     }
 
     suspend fun clearUserInfo() {
-        context.userDataStore.edit { it.clear() }
+        dataStore.edit { it.clear() }
     }
 
     fun getUserInfo(): Flow<UserInfo?> {
-        return context.userDataStore.data.map { prefs ->
+        return dataStore.data.map { prefs ->
             val id = prefs[Keys.USER_ID] ?: return@map null
             val username = prefs[Keys.USERNAME] ?: return@map null
             val email = prefs[Keys.EMAIL] ?: ""
