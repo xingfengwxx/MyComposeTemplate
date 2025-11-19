@@ -6,15 +6,13 @@ import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.XXPermissions
-import com.hjq.permissions.permission.PermissionLists
 import com.hjq.permissions.permission.base.IPermission
 import com.wangxingxing.mycomposeapp.aop.permission.PermissionRequest
-import com.wangxingxing.mycomposeapp.util.PermissionHelper
+import com.wangxingxing.mycomposeapp.utils.PermissionHelper
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
 import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Pointcut
-import kotlin.reflect.KClass
 
 @Aspect
 class PermissionAspect {

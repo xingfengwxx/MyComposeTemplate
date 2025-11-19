@@ -1,4 +1,4 @@
-package com.wangxingxing.mycomposeapp.util // 你可以放在自己的工具类包下
+package com.wangxingxing.mycomposeapp.utils // 你可以放在自己的工具类包下
 
 import com.blankj.utilcode.util.LogUtils
 import com.hjq.permissions.permission.PermissionLists
@@ -6,10 +6,7 @@ import com.hjq.permissions.permission.base.IPermission
 import java.lang.reflect.Field
 import java.lang.reflect.Method
 
-/**
- * 权限辅助工具类
- * 用于通过反射获取所有 XXPermissions 定义的权限对象
- */
+
 /**
  * author : 王星星
  * date : 2025/11/19 10:07
