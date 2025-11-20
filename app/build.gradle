@@ -94,30 +94,10 @@ dependencies {
 
     // DataStore
     implementation libs.datastore.preferences
-
-    // Testing
-    testImplementation libs.junit4
-    androidTestImplementation libs.androidx.test.ext.junit
-    androidTestImplementation libs.androidx.test.espresso.core
-    androidTestImplementation platform(libs.androidx.compose.bom)
-    androidTestImplementation libs.androidx.compose.ui.test.junit4
-    debugImplementation libs.androidx.compose.ui.tooling
-    debugImplementation libs.androidx.compose.ui.test.manifest
-
+    // Utils
     implementation libs.utilcodex
 
     // XXPermissions
     implementation libs.xxpermissions
-
-    // AspectJ
-    implementation libs.aspectj.rt
 }
 
-// 注意：AspectJX 插件不兼容 Android Gradle Plugin 8.0+
-// Transform API 已被移除，需要使用其他 AOP 方案
-// 
-// 替代方案：
-// 1. 使用 Compose 的权限请求方式（推荐）
-// 2. 使用 Hilt 拦截器
-// 3. 使用 Kotlin 委托模式
-// 4. 降级 AGP 到 7.x（不推荐）

@@ -1,16 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
-// 注意：AspectJX 插件已移除，因为不兼容 AGP 8.0+
-// buildscript {
-//     repositories {
-//         google()
-//         mavenCentral()
-//     }
-//     dependencies {
-//         classpath 'io.github.wurensen:gradle-android-plugin-aspectjx:3.3.2'
-//     }
-// }
-
 plugins {
     alias(libs.plugins.androidApp) apply false
     alias(libs.plugins.kotlinAndroid) apply false
