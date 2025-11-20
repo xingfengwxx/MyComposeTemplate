@@ -103,9 +103,6 @@ dependencies {
     // XXPermissions
     implementation(libs.xxpermissions)
 
-    // AspectJ
-    implementation(libs.aspectj.rt)
-
     // Testing
     testImplementation(libs.junit4)
     androidTestImplementation(libs.androidx.test.ext.junit)

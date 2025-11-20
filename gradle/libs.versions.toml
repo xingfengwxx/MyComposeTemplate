@@ -1,5 +1,5 @@
 [versions]
-androidGradlePlugin = "8.2.0"
+androidGradlePlugin = "8.13.1"
 kotlin = "1.9.22"
 hilt = "2.48"
 coreKtx = "1.12.0"
@@ -18,8 +18,6 @@ androidxTestExt = "1.1.5"
 espresso = "3.5.1"
 utilcodex = "1.31.1"
 xxpermissions = "26.5"
-aspectj = "1.9.6"
-aspectjx = "3.3.2"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,7 +52,7 @@ androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-
 
 utilcodex = { group = "com.blankj", name = "utilcodex", version.ref = "utilcodex"}
 xxpermissions = { group = "com.github.getActivity", name = "XXPermissions", version.ref = "xxpermissions" }
-aspectj-rt = { group = "org.aspectj", name = "aspectjrt", version.ref = "aspectj" }
+
 
 [plugins]
 androidApp = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -62,6 +60,4 @@ kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-# AspectJX 插件通过 buildscript classpath 添加，不使用 plugins 块
-# aspectjx = { id = "io.github.wurensen.android-aspectjx", version.ref = "aspectjx" }
 
