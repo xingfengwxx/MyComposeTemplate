@@ -62,6 +62,5 @@ kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinKapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 kotlinParcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "kotlin" }
 hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
-# AspectJX 插件通过 buildscript classpath 添加，不使用 plugins 块
-# aspectjx = { id = "io.github.wurensen.android-aspectjx", version.ref = "aspectjx" }
+
 
