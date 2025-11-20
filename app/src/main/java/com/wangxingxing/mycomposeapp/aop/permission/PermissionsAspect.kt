@@ -1,5 +1,4 @@
 import android.app.Activity
-import android.util.Log
 import androidx.fragment.app.Fragment
 import com.blankj.utilcode.util.ActivityUtils
 import com.blankj.utilcode.util.LogUtils
@@ -7,7 +6,7 @@ import com.blankj.utilcode.util.ToastUtils
 import com.hjq.permissions.OnPermissionCallback
 import com.hjq.permissions.XXPermissions
 import com.hjq.permissions.permission.base.IPermission
-import com.wangxingxing.mycomposeapp.aop.permission.PermissionRequest
+import com.wangxingxing.mycomposeapp.aop.permission.Permissions
 import com.wangxingxing.mycomposeapp.utils.PermissionHelper
 import org.aspectj.lang.ProceedingJoinPoint
 import org.aspectj.lang.annotation.Around
@@ -15,27 +14,23 @@ import org.aspectj.lang.annotation.Aspect
 import org.aspectj.lang.annotation.Pointcut
 
 @Aspect
-class PermissionAspect {
+class PermissionsAspect {
 
-    companion object {
-        private const val TAG = "PermissionAspect"
+    @Pointcut("execution(@com.wangxingxing.mycomposeapp.aop.permission.Permissions * *(..))")
+    fun requestPermission() {
     }
 
-    @Pointcut("execution(@com.wangxingxing.mycomposeapp.aop.permission.PermissionRequest * *(..)) && @annotation(permissionRequest)")
-    fun requestPermission(permissionRequest: PermissionRequest) {
-    }
-
-    @Around("requestPermission(permissionRequest)")
+    @Around("requestPermission() && @annotation(permissions)")
     @Throws(Throwable::class)
-    fun aroundJoinPoint(joinPoint: ProceedingJoinPoint, permissionRequest: PermissionRequest) {
+    fun aroundJoinPoint(joinPoint: ProceedingJoinPoint, permissions: Permissions) {
         val context = getContext(joinPoint.`this`)
         if (context == null) {
-            Log.e(TAG, "Unable to get context from join point")
+            LogUtils.e("Unable to get context from join point")
             return
         }
 
         // 1. 直接使用 .permission(String...) 方法，这是最简洁的方式
-        val permissionsToRequest = permissionRequest.permissions
+        val permissionsToRequest = permissions.value
         if (permissionsToRequest.isEmpty()) {
             // 如果没有请求任何权限，直接执行原方法
             try {

@@ -1,8 +1,9 @@
 package com.wangxingxing.mycomposeapp.ui.screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.* 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -47,9 +48,11 @@ fun SettingsScreen(
                 Divider()
                 
                 SettingsItem(
-                    title = "Privacy",
-                    description = "Privacy and security settings"
-                )
+                    title = "测试按钮抖动",
+                    description = "测试按钮抖动"
+                ) {
+                    viewModel.testSingleClick()
+                }
                 
                 Divider()
                 
@@ -57,18 +60,43 @@ fun SettingsScreen(
                     title = "About",
                     description = "App version and information"
                 )
+
+                Divider()
+
+                // 修正：直接调用 ViewModel 中的方法
+                SettingsItem(
+                    title = "请求文件读写权限",
+                    description = "请求文件读写权限"
+                ) {
+                    viewModel.requestFilePermissions()
+                }
             }
         }
     }
 }
 
+/**
+ * 设置项的可组合组件。
+ * @param title 标题
+ * @param description 描述
+ * @param onClick (可选) 点击事件回调
+ */
 @Composable
 fun SettingsItem(
     title: String,
-    description: String
+    description: String,
+    onClick: (() -> Unit)? = null
 ) {
+    val modifier = if (onClick != null) {
+        Modifier.clickable(onClick = onClick) // 如果 onClick 不为 null, 则使其可点击
+    } else {
+        Modifier
+    }
+
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier)
     ) {
         Text(
             text = title,
@@ -82,4 +110,3 @@ fun SettingsItem(
         )
     }
 }
-
