@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.wangxingxing.mycomposeapp.aop.singleclick.rememberSingleClick
 import com.wangxingxing.mycomposeapp.viewmodel.LoginViewModel
 
 @Composable
@@ -73,8 +74,13 @@ fun LoginScreen(
             )
         }
         
+        // 方案 3：使用 Compose 专用的防抖 Composable
+        val onLoginClick = rememberSingleClick(1000L) {
+            viewModel.login()
+        }
+        
         Button(
-            onClick = viewModel::login,
+            onClick = onLoginClick,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp),

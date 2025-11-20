@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.hjq.permissions.permission.PermissionLists
+import com.wangxingxing.mycomposeapp.aop.singleclick.rememberSingleClick
 import com.wangxingxing.mycomposeapp.utils.PermissionUtils
 import com.wangxingxing.mycomposeapp.utils.getActivity
 import com.wangxingxing.mycomposeapp.viewmodel.SettingsViewModel
@@ -54,11 +55,16 @@ fun SettingsScreen(
                 
                 Divider()
                 
+                // 方案 3：使用 Compose 专用的防抖 Composable
+                val onTestClick = rememberSingleClick(2000L) {
+                    viewModel.testSingleClick()
+                }
+                
                 SettingsItem(
                     title = "测试按钮抖动",
-                    description = "测试按钮抖动"
+                    description = "测试按钮抖动（方案3：Compose Composable）"
                 ) {
-                    viewModel.testSingleClick()
+                    onTestClick()
                 }
                 
                 Divider()
@@ -70,17 +76,14 @@ fun SettingsScreen(
 
                 Divider()
 
-                // 使用新的权限请求方式（不依赖 AspectJ）
-                SettingsItem(
-                    title = "请求文件读写权限",
-                    description = "请求文件读写权限"
-                ) {
-                    // 使用在顶层获取的 activity
+                // 方案 3：使用 Compose 专用的防抖 Composable 处理权限请求
+                val onRequestPermissionsClick = rememberSingleClick(1000L) {
                     PermissionUtils.requestPermissions(
                         permissions = arrayOf(
                             PermissionLists.getReadMediaImagesPermission(),
                             PermissionLists.getReadMediaVideoPermission(),
-                            PermissionLists.getReadMediaAudioPermission(),PermissionLists.getReadMediaVisualUserSelectedPermission()
+                            PermissionLists.getReadMediaAudioPermission(),
+                            PermissionLists.getReadMediaVisualUserSelectedPermission()
                         ),
                         onGranted = {
                             // 权限授予后执行 ViewModel 方法
@@ -90,6 +93,13 @@ fun SettingsScreen(
                             // 权限被拒绝的处理（可选）
                         }
                     )
+                }
+                
+                SettingsItem(
+                    title = "请求文件读写权限",
+                    description = "请求文件读写权限（方案3：防抖）"
+                ) {
+                    onRequestPermissionsClick()
                 }
             }
         }

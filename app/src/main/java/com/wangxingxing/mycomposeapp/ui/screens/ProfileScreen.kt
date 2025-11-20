@@ -7,6 +7,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.wangxingxing.mycomposeapp.aop.singleclick.rememberSingleClick
 import com.wangxingxing.mycomposeapp.viewmodel.ProfileViewModel
 
 @Composable
@@ -46,7 +47,11 @@ fun ProfileScreen(
                         color = MaterialTheme.colorScheme.error
                     )
                     Spacer(modifier = Modifier.height(16.dp))
-                    Button(onClick = { viewModel.loadUser() }) {
+                    // 方案 3：使用 Compose 专用的防抖 Composable
+                    val onRetryClick = rememberSingleClick(1000L) {
+                        viewModel.loadUser()
+                    }
+                    Button(onClick = onRetryClick) {
                         Text("Retry")
                     }
                 }
