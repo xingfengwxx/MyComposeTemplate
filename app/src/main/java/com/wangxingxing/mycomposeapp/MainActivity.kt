@@ -20,8 +20,23 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    
+    // 测试 AspectJ 是否工作 - 在 Activity 中更容易获取 Context
+    private fun testAspectJ() {
+        requestTestPermission()
+    }
+    
+    @com.wangxingxing.mycomposeapp.aop.permission.Permissions("android.permission.CAMERA")
+    private fun requestTestPermission() {
+        android.util.Log.d("MainActivity", "Test permission method executed")
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // 测试 AspectJ
+        testAspectJ()
+        
         setContent {
             MaterialTheme {
                 Surface(

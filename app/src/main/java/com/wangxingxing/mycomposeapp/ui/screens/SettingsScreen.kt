@@ -1,5 +1,6 @@
 package com.wangxingxing.mycomposeapp.ui.screens
 
+import android.Manifest
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -7,12 +8,18 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.hjq.permissions.permission.PermissionLists
+import com.wangxingxing.mycomposeapp.utils.PermissionUtils
+import com.wangxingxing.mycomposeapp.utils.getActivity
 import com.wangxingxing.mycomposeapp.viewmodel.SettingsViewModel
 
 @Composable
 fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
+    // 在 Composable 顶层获取 Activity
+    val activity = getActivity()
+    
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -63,12 +70,26 @@ fun SettingsScreen(
 
                 Divider()
 
-                // 修正：直接调用 ViewModel 中的方法
+                // 使用新的权限请求方式（不依赖 AspectJ）
                 SettingsItem(
                     title = "请求文件读写权限",
                     description = "请求文件读写权限"
                 ) {
-                    viewModel.requestFilePermissions()
+                    // 使用在顶层获取的 activity
+                    PermissionUtils.requestPermissions(
+                        permissions = arrayOf(
+                            PermissionLists.getReadMediaImagesPermission(),
+                            PermissionLists.getReadMediaVideoPermission(),
+                            PermissionLists.getReadMediaAudioPermission(),PermissionLists.getReadMediaVisualUserSelectedPermission()
+                        ),
+                        onGranted = {
+                            // 权限授予后执行 ViewModel 方法
+                            viewModel.requestFilePermissions()
+                        },
+                        onDenied = {
+                            // 权限被拒绝的处理（可选）
+                        }
+                    )
                 }
             }
         }

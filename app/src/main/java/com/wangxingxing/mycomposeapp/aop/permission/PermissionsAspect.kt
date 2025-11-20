@@ -16,18 +16,45 @@ import org.aspectj.lang.annotation.Pointcut
 @Aspect
 class PermissionsAspect {
 
+    // 尝试多种切点表达式以确保匹配
     @Pointcut("execution(@com.wangxingxing.mycomposeapp.aop.permission.Permissions * *(..))")
+    fun requestPermissionByExecution() {
+    }
+    
+    @Pointcut("call(@com.wangxingxing.mycomposeapp.aop.permission.Permissions * *(..))")
+    fun requestPermissionByCall() {
+    }
+    
+    @Pointcut("execution(* *(..)) && @annotation(com.wangxingxing.mycomposeapp.aop.permission.Permissions)")
+    fun requestPermissionByAnnotation() {
+    }
+    
+    // 组合所有可能的切点
+    @Pointcut("requestPermissionByExecution() || requestPermissionByCall() || requestPermissionByAnnotation()")
     fun requestPermission() {
     }
 
     @Around("requestPermission() && @annotation(permissions)")
     @Throws(Throwable::class)
     fun aroundJoinPoint(joinPoint: ProceedingJoinPoint, permissions: Permissions) {
+        // 添加调试日志，确认切面是否被调用
+        LogUtils.d("PermissionsAspect: aroundJoinPoint called for method: ${joinPoint.signature.name}")
+        LogUtils.d("PermissionsAspect: target object type: ${joinPoint.`this`.javaClass.simpleName}")
+        
         val context = getContext(joinPoint.`this`)
         if (context == null) {
-            LogUtils.e("Unable to get context from join point")
+            LogUtils.e("PermissionsAspect: Unable to get context from join point. Target: ${joinPoint.`this`.javaClass.name}")
+            // 即使没有 context，也尝试执行原方法，避免完全阻塞
+            try {
+                joinPoint.proceed()
+            } catch (throwable: Throwable) {
+                LogUtils.e("PermissionsAspect: Error executing method without context", throwable)
+                throwable.printStackTrace()
+            }
             return
         }
+        
+        LogUtils.d("PermissionsAspect: Context obtained: ${context.javaClass.simpleName}")
 
         // 1. 直接使用 .permission(String...) 方法，这是最简洁的方式
         val permissionsToRequest = permissions.value
@@ -42,7 +69,8 @@ class PermissionsAspect {
         }
 
         val requestPermissionLists = PermissionHelper.allPermissions.filter { it.permissionName in permissionsToRequest }
-        LogUtils.i("requestPermissionLists: $requestPermissionLists")
+        LogUtils.i("PermissionsAspect: Requesting permissions: $requestPermissionLists")
+        LogUtils.d("PermissionsAspect: Permissions to request: ${permissionsToRequest.joinToString()}")
 
         XXPermissions.with(context)
             // 2. 直接传入字符串数组，XXPermissions 内部会自动处理
@@ -74,11 +102,28 @@ class PermissionsAspect {
     }
 
     private fun getContext(obj: Any): Activity? {
-        return when (obj) {
-            is Activity -> obj
-            is Fragment -> obj.activity
-            else -> ActivityUtils.getTopActivity()
+        val context = when (obj) {
+            is Activity -> {
+                LogUtils.d("PermissionsAspect: Context from Activity")
+                obj
+            }
+            is Fragment -> {
+                LogUtils.d("PermissionsAspect: Context from Fragment")
+                obj.activity
+            }
+            else -> {
+                // 对于 ViewModel 或其他类型，尝试获取当前 Activity
+                LogUtils.d("PermissionsAspect: Attempting to get top activity for type: ${obj.javaClass.simpleName}")
+                val topActivity = ActivityUtils.getTopActivity()
+                if (topActivity != null) {
+                    LogUtils.d("PermissionsAspect: Top activity obtained: ${topActivity.javaClass.simpleName}")
+                } else {
+                    LogUtils.e("PermissionsAspect: Top activity is null!")
+                }
+                topActivity
+            }
         }
+        return context
     }
 }
 
